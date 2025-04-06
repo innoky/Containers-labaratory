@@ -20,6 +20,44 @@ private:
     int size;
 
 public:
+    //////////// ITERATORS ////////////
+    
+    class Iterator
+    {
+    private:
+        Node *current;
+
+    public:
+        Iterator(Node *node) : current(node) {}
+
+        T &operator*() const
+        {
+            return current->data;
+        }
+
+        Iterator &operator++()
+        {
+            current = current->next.get();
+            return *this;
+        }
+
+        bool operator!=(const Iterator &other) const
+        {
+            return current != other.current;
+        }
+    };
+
+    Iterator begin()
+    {
+        return Iterator(head.get());
+    }
+
+    Iterator end()
+    {
+        return Iterator(nullptr);
+    }
+
+    ////////////////////////////////////
 
     LinkedList();
     LinkedList(T *items, int count);
