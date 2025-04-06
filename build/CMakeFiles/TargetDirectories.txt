@@ -1,4 +1,0 @@
-/home/kzs/cplus/labs/lab2/build/CMakeFiles/lab2.dir
-/home/kzs/cplus/labs/lab2/build/CMakeFiles/tests.dir
-/home/kzs/cplus/labs/lab2/build/CMakeFiles/edit_cache.dir
-/home/kzs/cplus/labs/lab2/build/CMakeFiles/rebuild_cache.dir

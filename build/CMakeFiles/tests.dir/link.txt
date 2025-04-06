@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/tests.dir/tests/catch_amalgamated.cpp.o CMakeFiles/tests.dir/tests/test_main.cpp.o CMakeFiles/tests.dir/tests/test_array.cpp.o CMakeFiles/tests.dir/tests/test_list.cpp.o -o tests 
