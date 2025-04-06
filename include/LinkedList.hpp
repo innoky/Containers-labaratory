@@ -57,6 +57,38 @@ public:
         return Iterator(nullptr);
     }
 
+    class ConstIterator
+    {
+    private:
+        const Node *current;
+
+    public:
+        ConstIterator(const Node *node) : current(node) {}
+
+        const T &operator*() const { return current->data; }
+
+        ConstIterator &operator++()
+        {
+            current = current->next.get();
+            return *this;
+        }
+
+        bool operator!=(const ConstIterator &other) const
+        {
+            return current != other.current;
+        }
+    };
+
+    ConstIterator begin() const
+    {
+        return ConstIterator(head.get());
+    }
+
+    ConstIterator end() const
+    {
+        return ConstIterator(nullptr);
+    }
+
     ////////////////////////////////////
 
     LinkedList();

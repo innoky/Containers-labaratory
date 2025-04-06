@@ -13,9 +13,8 @@ public:
     DynamicArray();
     DynamicArray(T *items, int count);      
     DynamicArray(int size);                    
-    DynamicArray(const DynamicArray<T> &other); 
+    DynamicArray(const DynamicArray<T> &other);
 
-    
     T Get(int index) const;
     int GetSize() const;
     void Set(int index, T value);
@@ -23,6 +22,11 @@ public:
     void InsertAt(int index, const T &value);
     void Append(const T &value);
     void Prepend(const T &value);
+
+    DynamicArray<T> SetAt(int index, const T &value) const;
+    DynamicArray<T> Appended(const T &value) const;
+    DynamicArray<T> Prepended(const T &value) const;
+    DynamicArray<T> InsertedAt(int index, const T &value) const;
 
     DynamicArray<T> GetSubArray(int start, int end) const;
     DynamicArray<T> Concat(const DynamicArray<T> &other) const;
@@ -143,5 +147,40 @@ DynamicArray<T> DynamicArray<T>::Concat(const DynamicArray<T> &other) const
     for (int i = 0; i < other.size; ++i)
         result.Set(size + i, other.data[i]);
 
+    return result;
+}
+
+template <class T>
+DynamicArray<T> DynamicArray<T>::SetAt(int index, const T &value) const
+{
+    if (index < 0 || index >= size)
+        throw std::out_of_range("Index out of range");
+
+    DynamicArray<T> result(*this); 
+    result.Set(index, value);      
+    return result;                 
+}
+
+template <class T>
+DynamicArray<T> DynamicArray<T>::Appended(const T &value) const
+{
+    DynamicArray<T> result(*this);
+    result.Append(value);
+    return result;
+}
+
+template <class T>
+DynamicArray<T> DynamicArray<T>::Prepended(const T &value) const
+{
+    DynamicArray<T> result(*this);
+    result.Prepend(value);
+    return result;
+}
+
+template <class T>
+DynamicArray<T> DynamicArray<T>::InsertedAt(int index, const T &value) const
+{
+    DynamicArray<T> result(*this);
+    result.InsertAt(index, value);
     return result;
 }

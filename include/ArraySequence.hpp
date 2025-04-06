@@ -34,6 +34,26 @@ public:
 
     void InsertAt(int index, const T &value) override { array.InsertAt(index, value); }
 
+    Sequence<T> *SetAt(int index, const T &value) const override
+    {
+        return new ArraySequence<T>(array.SetAt(index, value));
+    }
+
+    Sequence<T> *Appended(const T &value) const override
+    {
+        return new ArraySequence<T>(array.Appended(value));
+    }
+
+    Sequence<T> *Prepended(const T &value) const override
+    {
+        return new ArraySequence<T>(array.Prepended(value));
+    }
+
+    Sequence<T> *InsertedAt(int index, const T &value) const override
+    {
+        return new ArraySequence<T>(array.InsertedAt(index, value));
+    }
+    
     Sequence<T> *GetSubSequence(int start, int end) const override
     {
         DynamicArray<T> sub = array.GetSubArray(start, end);

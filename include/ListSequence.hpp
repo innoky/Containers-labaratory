@@ -34,6 +34,34 @@ public:
 
     void InsertAt(int index, const T &value) override { list.InsertAt(index, value); }
 
+    Sequence<T> *SetAt(int index, const T &value) const override
+    {
+        LinkedList<T> newList(this->list); // копия
+        newList.Set(index, value);
+        return new ListSequence<T>(newList);
+    }
+
+    Sequence<T> *Appended(const T &value) const override
+    {
+        LinkedList<T> newList(this->list);
+        newList.Append(value);
+        return new ListSequence<T>(newList);
+    }
+
+    Sequence<T> *Prepended(const T &value) const override
+    {
+        LinkedList<T> newList(this->list);
+        newList.Prepend(value);
+        return new ListSequence<T>(newList);
+    }
+
+    Sequence<T> *InsertedAt(int index, const T &value) const override
+    {
+        LinkedList<T> newList(this->list);
+        newList.InsertAt(index, value);
+        return new ListSequence<T>(newList);
+    }
+
     Sequence<T> *GetSubSequence(int start, int end) const override
     {
         LinkedList<T> *sub = list.GetSubList(start, end);
@@ -42,7 +70,8 @@ public:
 
     Sequence<T> *Concat(const Sequence<T> &other) const override
     {
-        LinkedList<T> *merged = list.Concat(dynamic_cast<const ListSequence<T> &>(other).list);
+        const ListSequence<T> &otherList = dynamic_cast<const ListSequence<T> &>(other);
+        LinkedList<T> *merged = list.Concat(otherList.list);
         return new ListSequence<T>(*merged);
     }
 };

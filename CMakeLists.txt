@@ -10,11 +10,18 @@ add_executable(lab2
     src/main.cpp
 )
 
+# ======== ТЕСТЫ ДЛЯ MUTABLE ==========
 add_executable(tests
     tests/catch_amalgamated.cpp     
-    tests/test_main.cpp
     tests/test_array.cpp
     tests/test_list.cpp
 )
-
 target_include_directories(tests PRIVATE include tests)
+
+# ======== ТЕСТЫ ДЛЯ IMMUTABLE ==========
+add_executable(immutable_tests
+    tests/catch_amalgamated.cpp
+    tests/test_immutable_array.cpp
+    tests/test_immutable_list.cpp
+)
+target_include_directories(immutable_tests PRIVATE include tests)
