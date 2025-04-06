@@ -15,6 +15,7 @@ public:
     DynamicArray(const DynamicArray<T> &other); 
 
     T Get(int index) const;
+    int GetSize();
     void Set(int index, T value);
     void Resize(int newSize);
 };
@@ -50,4 +51,33 @@ T DynamicArray<T>::Get(int index) const
     if (index < 0 || index >= size)
         throw std::out_of_range("Index out of range");
     return data[index];
+}
+
+template <typename T>
+int DynamicArray<T>::GetSize()
+{
+    return size;
+}
+
+template <typename T>
+void DynamicArray<T>::Set(int index, T value)
+{
+    if (index < 0 || index >= size)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+    data[index] = value;
+}
+
+template <typename T>
+void DynamicArray<T>::Resize(int newSize)
+{
+    std::unique_ptr<T[]> tmp_data = std::make_unique<T[]>(newSize);
+    int copySize = ( newSize < size ) ? newSize : size;
+
+    for (int i = 0; i < copySize; ++i)
+        tmp_data[i] = data[i];
+
+    data = std::move(tmp_data); 
+    size = newSize;
 }
