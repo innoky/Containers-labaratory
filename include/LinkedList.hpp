@@ -58,8 +58,65 @@ void LinkedList<T>::Append(const T &item)
         tail->next = std::move(newNode);
         tail = rawPtr;
     }
-    
     size++;
+}
+
+template <class T>
+void LinkedList<T>::Prepend(const T &item)
+{
+    auto newNode = std::make_unique<Node>(item);
+    Node *rawPtr = newNode.get();
+
+    if (!head)
+    {
+        head = std::move(newNode);
+        tail = rawPtr;
+    }
+    else
+    {
+        newNode->next = std::move(head);
+        head = newNode;
+    }
+
+    size++;
+}
+
+template <class T>
+T LinkedList<T>::GetFirst() const
+{
+    if (!head)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+    return head->data;
+}
+
+template <class T>
+T LinkedList<T>::GetLast() const
+{
+    if (!tail)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+    return tail->data;
+}
+
+template <class T>
+T LinkedList<T>::Get(int index) const 
+{
+    if (!head) 
+        throw std::out_of_range("Index out of range");
+
+    int iterator = 0;
+    Node *c = head.get();
+    while(iterator < index)
+    {
+        if (c->next == nullptr)
+            throw std::out_of_range("Index out of range");
+        c = c->next.get();
+        iterator++;
+    }
+    return c->data;
 }
 
 template <class T>
