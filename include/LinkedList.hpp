@@ -29,7 +29,8 @@ public:
     T GetFirst() const;
     T GetLast() const;
     T Get(int index) const;
-    int GetSize() const;
+
+    int size() const;
 
     void Append(const T &item);
     void Prepend(const T &item);
@@ -99,6 +100,12 @@ T LinkedList<T>::GetLast() const
         throw std::out_of_range("Index out of range");
     }
     return tail->data;
+}
+
+template <class T>
+int LinkedList<T>::size() const
+{
+    return size;
 }
 
 template <class T>
@@ -180,6 +187,7 @@ void LinkedList<T>::InsertAt(int index, const T &item)
 
 template <class T>
 LinkedList<T>::LinkedList(T *items, int count)
+
 {
 
     auto headNode = std::make_unique<Node>(items[0]);
@@ -193,4 +201,21 @@ LinkedList<T>::LinkedList(T *items, int count)
     }
     tail = prev;
     size = count;
+}
+
+template <class T>
+LinkedList<T>::LinkedList(const LinkedList<T>& other)
+{
+
+    auto headNode = std::make_unique<Node>(other.Get(0));
+    head = std::move(headNode);
+    auto prev = head.get();
+    for (int i = 1; i < other.size(); ++i)
+    {
+        auto newNode = std::make_unique<Node>(other.Get(i));
+        prev->next = std::move(newNode);
+        prev = prev->next.get();
+    }
+    tail = prev;
+    size = other.size();
 }
