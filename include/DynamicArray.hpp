@@ -2,7 +2,7 @@
 
 #include <memory>
 
-template<typename T>
+template<class T>
 class DynamicArray
 {
 private:
@@ -20,7 +20,7 @@ public:
     void Resize(int newSize);
 };
 
-template <typename T>
+template <class T>
 DynamicArray<T>::DynamicArray(T *items, int count)
 {
     data = std::make_unique<T[]>(count);
@@ -29,14 +29,14 @@ DynamicArray<T>::DynamicArray(T *items, int count)
         data[i] = items[i];
 }
 
-template <typename T>
+template <class T>
 DynamicArray<T>::DynamicArray(int size)
 {
     data = std::make_unique<T[]>(size);
     this->size = size;
 }
 
-template <typename T>
+template <class T>
 DynamicArray<T>::DynamicArray(const DynamicArray<T> &other)
 {
     size = other.size;
@@ -45,7 +45,7 @@ DynamicArray<T>::DynamicArray(const DynamicArray<T> &other)
         data[i] =other.data[i];
 }
 
-template <typename T>
+template <class T>
 T DynamicArray<T>::Get(int index) const
 {
     if (index < 0 || index >= size)
@@ -53,13 +53,13 @@ T DynamicArray<T>::Get(int index) const
     return data[index];
 }
 
-template <typename T>
+template <class T>
 int DynamicArray<T>::GetSize()
 {
     return size;
 }
 
-template <typename T>
+template <class T>
 void DynamicArray<T>::Set(int index, T value)
 {
     if (index < 0 || index >= size)
@@ -69,7 +69,7 @@ void DynamicArray<T>::Set(int index, T value)
     data[index] = value;
 }
 
-template <typename T>
+template <class T>
 void DynamicArray<T>::Resize(int newSize)
 {
     std::unique_ptr<T[]> tmp_data = std::make_unique<T[]>(newSize);

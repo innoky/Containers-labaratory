@@ -1,0 +1,69 @@
+#pragma once
+
+#include <memory>
+
+template <class T>
+class LinkedList
+{
+private:
+    struct Node
+    {
+        T data;
+        std::unique_ptr<Node> next;
+
+        Node(const T &val) : data(val), next(nullptr) {}
+    };
+
+    std::unique_ptr<Node> head;
+    Node *tail;
+    
+    int size;
+
+public:
+
+    LinkedList();
+    LinkedList(T *items, int count);
+    LinkedList(const LinkedList<T> &other);
+    ~LinkedList();
+
+    T GetFirst() const;
+    T GetLast() const;
+    T Get(int index) const;
+    int GetSize() const;
+
+    void Append(const T &item);
+    void Prepend(const T &item);
+    void InsertAt(int index, const T &item);
+    void Set(int index, const T &item);
+    LinkedList<T> *GetSubList(int start, int end) const;
+    LinkedList<T> *Concat(const LinkedList<T> &other) const;
+};
+
+template <class T>
+LinkedList<T>::LinkedList(): head(nullptr), tail(nullptr), size(0){}
+
+template <class T>
+void LinkedList<T>::Append(const T &item)
+{
+    auto newNode = std::make_unique<Node>(item);
+    Node *rawPtr = newNode.get();
+
+    if (!head)
+    {
+        head = std::move(newNode);
+        tail = rawPtr;
+    }
+    else
+    {
+        tail->next = std::move(newNode);
+        tail = rawPtr;
+    }
+    
+    size++;
+}
+
+template <class T>
+LinkedList<T>::LinkedList(T *items, int count)
+{
+
+}
