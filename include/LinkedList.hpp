@@ -62,9 +62,9 @@ public:
     LinkedList();
     LinkedList(T *items, int count);
     LinkedList(const LinkedList<T> &other);
-    ~LinkedList();
 
     T &operator[](int index);
+    const T &operator[](int index) const;
     LinkedList<T> &operator=(const LinkedList<T> &other);
 
     T GetFirst() const;
@@ -72,7 +72,7 @@ public:
     T Get(int index) const;
     T& GetLink(int index);
 
-    int size() const;
+    int GetSize() const;
 
     void Append(const T &item);
     void Prepend(const T &item);
@@ -118,7 +118,7 @@ void LinkedList<T>::Prepend(const T &item)
     else
     {
         newNode->next = std::move(head);
-        head = newNode;
+        head = std::move(newNode);
     }
 
     size++;
@@ -145,7 +145,7 @@ T LinkedList<T>::GetLast() const
 }
 
 template <class T>
-int LinkedList<T>::size() const
+int LinkedList<T>::GetSize() const
 {
     return size;
 }
@@ -266,7 +266,7 @@ LinkedList<T>::LinkedList(T *items, int count)
 template <class T>
 LinkedList<T>::LinkedList(const LinkedList<T>& other)
 {
-    if (other.size() == 0)
+    if (other.GetSize() == 0)
     {
         head = nullptr;
         tail = nullptr;
@@ -277,14 +277,14 @@ LinkedList<T>::LinkedList(const LinkedList<T>& other)
         auto headNode = std::make_unique<Node>(other.Get(0));
         head = std::move(headNode);
         auto prev = head.get();
-        for (int i = 1; i < other.size(); ++i)
+        for (int i = 1; i < other.GetSize(); ++i)
         {
             auto newNode = std::make_unique<Node>(other.Get(i));
             prev->next = std::move(newNode);
             prev = prev->next.get();
         }
         tail = prev;
-        size = other.size();
+        size = other.GetSize();
     }
 }
 
@@ -292,6 +292,25 @@ template <class T>
 T &LinkedList<T>::operator[](int index)
 {
     return GetLink(index);
+}
+
+template <class T>
+const T &LinkedList<T>::operator[](int index) const
+{
+    if (!head || index < 0)
+        throw std::out_of_range("Index out of range");
+
+    int iterator = 0;
+    Node *c = head.get();
+    while (iterator < index)
+    {
+        if (!c->next)
+            throw std::out_of_range("Index out of range");
+        c = c->next.get();
+        iterator++;
+    }
+
+    return c->data;
 }
 
 template <class T>
@@ -304,13 +323,13 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
     this->tail = nullptr;
     this->size = 0;
 
-    if (other.size() == 0)
+    if (other.GetSize() == 0)
         return *this;
 
     this->head = std::make_unique<Node>(other[0]);
     Node *prev = this->head.get();
 
-    for (int i = 1; i < other.size(); ++i)
+    for (int i = 1; i < other.GetSize(); ++i)
     {
         auto newNode = std::make_unique<Node>(other[i]);
         prev->next = std::move(newNode);
@@ -318,16 +337,9 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
     }
 
     this->tail = prev;
-    this->size = other.size();
+    this->size = other.GetSize();
 
     return *this;
-}
-
-template <class T>
-LinkedList<T> operator+(const LinkedList<T> &lhs, const LinkedList<T> &rhs)
-{
-    std::unique_ptr<LinkedList<T>> result(lhs.Concat(rhs));
-    return *result;
 }
 
 template <class T>
@@ -349,7 +361,7 @@ LinkedList<T>* LinkedList<T>::Concat(const LinkedList<T> &other) const
 {
     LinkedList *newLinkedList = new LinkedList(*this);
 
-    for(int i = 0; i < other.size(); i++)
+    for(int i = 0; i < other.GetSize(); i++)
     {
         newLinkedList->Append(other[i]);
     }

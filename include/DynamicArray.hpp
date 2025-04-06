@@ -17,7 +17,7 @@ public:
 
     
     T Get(int index) const;
-    int GetSize();
+    int GetSize() const;
     void Set(int index, T value);
     void Resize(int newSize);
     void InsertAt(int index, const T &value);
@@ -65,7 +65,7 @@ T DynamicArray<T>::Get(int index) const
 }
 
 template <class T>
-int DynamicArray<T>::GetSize()
+int DynamicArray<T>::GetSize() const
 {
     return size;
 }
