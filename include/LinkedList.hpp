@@ -177,3 +177,20 @@ void LinkedList<T>::InsertAt(int index, const T &item)
 
     size++;
 }
+
+template <class T>
+LinkedList<T>::LinkedList(T *items, int count)
+{
+
+    auto headNode = std::make_unique<Node>(items[0]);
+    head = std::move(headNode);
+    auto prev = head.get();
+    for (int i = 1; i < count; ++i)
+    {
+        auto newNode = std::make_unique<Node>(items[i]);
+        prev->next = std::move(newNode);
+        prev = prev->next.get();
+    }
+    tail = prev;
+    size = count;
+}
