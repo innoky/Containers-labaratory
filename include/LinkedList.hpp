@@ -104,7 +104,7 @@ T LinkedList<T>::GetLast() const
 template <class T>
 T LinkedList<T>::Get(int index) const 
 {
-    if (!head) 
+    if (!head || index < 0) 
         throw std::out_of_range("Index out of range");
 
     int iterator = 0;
@@ -120,7 +120,60 @@ T LinkedList<T>::Get(int index) const
 }
 
 template <class T>
-LinkedList<T>::LinkedList(T *items, int count)
+void LinkedList<T>::Set(int index, const T &item)
 {
+    if (!head || index < 0)
+        throw std::out_of_range("Index out of range");
 
+    int iterator = 0;
+    Node *c = head.get();
+    while (iterator < index)
+    {
+        if (c->next == nullptr)
+            throw std::out_of_range("Index out of range");
+        c = c->next.get();
+        iterator++;
+    }
+    c->data = item;
+}
+
+template <class T>
+void LinkedList<T>::InsertAt(int index, const T &item)
+{
+    if (index < 0)
+        throw std::out_of_range("Index out of range");
+
+    if (index == size)
+    {
+        Append(item);
+        return;
+    }
+
+    int iterator = 0;
+    Node *c = head.get();
+    Node *prev;
+    while (iterator < index)
+    {
+        if (c->next == nullptr)
+            throw std::out_of_range("Index out of range");
+        prev = c;
+        c = c->next.get();
+        iterator++;
+    }
+
+    auto newNode = std::make_unique<Node>(item);
+
+    if (index == 0)
+    {
+        newNode->next = std::move(head);
+        head = std::move(newNode);
+        if (size == 0) tail = head.get();
+    }
+    else
+    {
+        newNode->next = std::move(prev->next);
+        prev->next = std::move(newNode);
+    }
+
+    size++;
 }
