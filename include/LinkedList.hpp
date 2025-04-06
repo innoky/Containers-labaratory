@@ -27,7 +27,7 @@ public:
     ~LinkedList();
 
     T &operator[](int index);
-    const T &operator[](int index) const;
+    LinkedList<T> &operator=(const LinkedList<T> &other);
 
     T GetFirst() const;
     T GetLast() const;
@@ -257,6 +257,35 @@ T &LinkedList<T>::operator[](int index)
 }
 
 template <class T>
+LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
+{
+    if (this == &other)
+        return *this; 
+
+    this->head = nullptr;
+    this->tail = nullptr;
+    this->size = 0;
+
+    if (other.size() == 0)
+        return *this;
+        
+    this->head = std::make_unique<Node>(other[0]);
+    Node *prev = this->head.get();
+
+    for (int i = 1; i < other.size(); ++i)
+    {
+        auto newNode = std::make_unique<Node>(other[i]);
+        prev->next = std::move(newNode);
+        prev = prev->next.get();
+    }
+
+    this->tail = prev;
+    this->size = other.size();
+
+    return *this;
+}
+
+template <class T>
 LinkedList<T>* LinkedList<T>::GetSubList(int start, int end) const
 {
     if (start < 0 || end > size || start > end)
@@ -270,3 +299,15 @@ LinkedList<T>* LinkedList<T>::GetSubList(int start, int end) const
     return newLinkedList;
 }
 
+template <class T>
+LinkedList<T>* LinkedList<T>::Concat(const LinkedList<T> &other) const
+{
+    LinkedList *newLinkedList = new LinkedList(*this);
+
+    for(int i = 0; i < other.size(); i++)
+    {
+        newLinkedList->Append(other[i]);
+    }
+
+    return newLinkedList;
+}
