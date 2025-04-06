@@ -268,7 +268,7 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
 
     if (other.size() == 0)
         return *this;
-        
+
     this->head = std::make_unique<Node>(other[0]);
     Node *prev = this->head.get();
 
@@ -283,6 +283,13 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
     this->size = other.size();
 
     return *this;
+}
+
+template <class T>
+LinkedList<T> operator+(const LinkedList<T> &lhs, const LinkedList<T> &rhs)
+{
+    std::unique_ptr<LinkedList<T>> result(lhs.Concat(rhs));
+    return *result;
 }
 
 template <class T>
@@ -310,4 +317,11 @@ LinkedList<T>* LinkedList<T>::Concat(const LinkedList<T> &other) const
     }
 
     return newLinkedList;
+}
+
+template <class T>
+LinkedList<T> operator+(const LinkedList<T> &lhs, const LinkedList<T> &rhs)
+{
+    std::unique_ptr<LinkedList<T>> result(lhs.Concat(rhs));
+    return *result;
 }
