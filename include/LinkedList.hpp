@@ -26,9 +26,13 @@ public:
     LinkedList(const LinkedList<T> &other);
     ~LinkedList();
 
+    T &operator[](int index);
+    const T &operator[](int index) const;
+
     T GetFirst() const;
     T GetLast() const;
     T Get(int index) const;
+    T& GetLink(int index);
 
     int size() const;
 
@@ -127,6 +131,24 @@ T LinkedList<T>::Get(int index) const
 }
 
 template <class T>
+T& LinkedList<T>::GetLink(int index)
+{
+    if (!head || index < 0)
+        throw std::out_of_range("Index out of range");
+
+    int iterator = 0;
+    Node *c = head.get();
+    while (iterator < index)
+    {
+        if (c->next == nullptr)
+            throw std::out_of_range("Index out of range");
+        c = c->next.get();
+        iterator++;
+    }
+    return c->data;
+}
+
+template <class T>
 void LinkedList<T>::Set(int index, const T &item)
 {
     if (!head || index < 0)
@@ -206,16 +228,44 @@ LinkedList<T>::LinkedList(T *items, int count)
 template <class T>
 LinkedList<T>::LinkedList(const LinkedList<T>& other)
 {
-
-    auto headNode = std::make_unique<Node>(other.Get(0));
-    head = std::move(headNode);
-    auto prev = head.get();
-    for (int i = 1; i < other.size(); ++i)
+    if (other.size() == 0)
     {
-        auto newNode = std::make_unique<Node>(other.Get(i));
-        prev->next = std::move(newNode);
-        prev = prev->next.get();
+        head = nullptr;
+        tail = nullptr;
+        size = 0;
     }
-    tail = prev;
-    size = other.size();
+    else
+    {
+        auto headNode = std::make_unique<Node>(other.Get(0));
+        head = std::move(headNode);
+        auto prev = head.get();
+        for (int i = 1; i < other.size(); ++i)
+        {
+            auto newNode = std::make_unique<Node>(other.Get(i));
+            prev->next = std::move(newNode);
+            prev = prev->next.get();
+        }
+        tail = prev;
+        size = other.size();
+    }
+}
+
+template <class T>
+T &LinkedList<T>::operator[](int index)
+{
+    return GetLink(index);
+}
+
+template <class T>
+LinkedList<T>* LinkedList<T>::GetSubList(int start, int end) const
+{
+    if (start < 0 || end > size || start > end)
+        throw std::out_of_range("Borders out of range");
+
+    LinkedList* newLinkedList = new LinkedList();
+    for (int i = start; i < end; ++i)
+    {
+        (*newLinkedList).Append((*this)[i]);
+    }
+    return newLinkedList;
 }
