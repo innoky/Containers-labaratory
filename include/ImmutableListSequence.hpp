@@ -21,6 +21,30 @@ public:
     T Get(int index) const override { return list.Get(index); }
     int GetLength() const override { return list.GetSize(); }
 
+    ImmutableSequence<T> *SetAt(int index, const T &value) const override
+    {
+        LinkedList<T> result = list.SetAt(index, value);
+        return new ImmutableListSequence<T>(result);
+    }
+
+    ImmutableSequence<T> *Appended(const T &value) const override
+    {
+        LinkedList<T> result = list.Appended(value);
+        return new ImmutableListSequence<T>(result);
+    }
+
+    ImmutableSequence<T> *Prepended(const T &value) const override
+    {
+        LinkedList<T> result = list.Prepended(value);
+        return new ImmutableListSequence<T>(result);
+    }
+
+    ImmutableSequence<T> *InsertedAt(int index, const T &value) const override
+    {
+        LinkedList<T> result = list.InsertedAt(index, value);
+        return new ImmutableListSequence<T>(result);
+    }
+
     ImmutableSequence<T> *GetSubSequence(int start, int end) const override
     {
         LinkedList<T> *sub = list.GetSubList(start, end);

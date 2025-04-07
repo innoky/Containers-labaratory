@@ -15,13 +15,6 @@ public:
     virtual void Prepend(const T &value) = 0;
     virtual void InsertAt(int index, const T &value) = 0;
 
-    // Immutable versions
-    virtual Sequence<T> *SetAt(int index, const T &value) const = 0;
-    virtual Sequence<T> *Appended(const T &value) const = 0;
-    virtual Sequence<T> *Prepended(const T &value) const = 0;
-    virtual Sequence<T> *InsertedAt(int index, const T &value) const = 0;
-
-    
     virtual Sequence<T> *GetSubSequence(int start, int end) const = 0;
     virtual Sequence<T> *Concat(const Sequence<T> &other) const = 0;
 

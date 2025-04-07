@@ -110,8 +110,16 @@ public:
     void Prepend(const T &item);
     void InsertAt(int index, const T &item);
     void Set(int index, const T &item);
+
     LinkedList<T> *GetSubList(int start, int end) const;
     LinkedList<T> *Concat(const LinkedList<T> &other) const;
+
+    //Immutable methods
+
+    LinkedList<T> SetAt(int index, const T &value) const;
+    LinkedList<T> Appended(const T &value) const;
+    LinkedList<T> Prepended(const T &value) const;
+    LinkedList<T> InsertedAt(int index, const T &value) const;
 };
 
 template <class T>
@@ -406,4 +414,36 @@ LinkedList<T> operator+(const LinkedList<T> &lhs, const LinkedList<T> &rhs)
 {
     std::unique_ptr<LinkedList<T>> result(lhs.Concat(rhs));
     return *result;
+}
+
+template <class T>
+LinkedList<T> LinkedList<T>::SetAt(int index, const T &value) const
+{
+    LinkedList<T> result(*this);
+    result.Set(index, value);
+    return result;
+}
+
+template <class T>
+LinkedList<T> LinkedList<T>::Appended(const T &value) const
+{
+    LinkedList<T> result(*this);
+    result.Append(value);
+    return result;
+}
+
+template <class T>
+LinkedList<T> LinkedList<T>::Prepended(const T &value) const
+{
+    LinkedList<T> result(*this);
+    result.Prepend(value);
+    return result;
+}
+
+template <class T>
+LinkedList<T> LinkedList<T>::InsertedAt(int index, const T &value) const
+{
+    LinkedList<T> result(*this);
+    result.InsertAt(index, value);
+    return result;
 }

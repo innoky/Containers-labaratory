@@ -26,6 +26,30 @@ public:
 
     int GetLength() const override { return array.GetSize(); }
 
+    ImmutableSequence<T> *SetAt(int index, const T &value) const override
+    {
+        DynamicArray<T> result = array.SetAt(index, value);
+        return new ImmutableArraySequence<T>(result);
+    }
+
+    ImmutableSequence<T> *Appended(const T &value) const override
+    {
+        DynamicArray<T> result = array.Appended(value);
+        return new ImmutableArraySequence<T>(result);
+    }
+
+    ImmutableSequence<T> *Prepended(const T &value) const override
+    {
+        DynamicArray<T> result = array.Prepended(value);
+        return new ImmutableArraySequence<T>(result);
+    }
+
+    ImmutableSequence<T> *InsertedAt(int index, const T &value) const override
+    {
+        DynamicArray<T> result = array.InsertedAt(index, value);
+        return new ImmutableArraySequence<T>(result);
+    }
+
     ImmutableSequence<T> *GetSubSequence(int start, int end) const override
     {
         DynamicArray<T> sub = array.GetSubArray(start, end);

@@ -1,28 +1,27 @@
 #include <iostream>
-#include "ArraySequence.hpp"
-#include "ListSequence.hpp"
+#include "../include/ArraySequence.hpp"
+#include "../include/ListSequence.hpp"
+#include "SequenceUI.hpp"
 
 int main()
 {
-    Sequence<int> *arrSeq = new ArraySequence<int>();
-    Sequence<int> *listSeq = new ListSequence<int>();
+    std::cout << "Choose structure:\n1. ArraySequence\n2. ListSequence\n> ";
+    int choice;
+    std::cin >> choice;
 
-    for (int i = 1; i <= 5; ++i)
+    Sequence<int> *seq = nullptr;
+    if (choice == 1)
+        seq = new ArraySequence<int>();
+    else if (choice == 2)
+        seq = new ListSequence<int>();
+    else
     {
-        arrSeq->Append(i * 10);
-        listSeq->Prepend(i);
+        std::cout << "Invalid choice.\n";
+        return 1;
     }
 
-    std::cout << "ArraySequence: ";
-    for (int i = 0; i < arrSeq->GetLength(); ++i)
-        std::cout << arrSeq->Get(i) << " ";
-    std::cout << "\n";
+    SequenceUI(seq);
+    delete seq;
 
-    std::cout << "ListSequence: ";
-    for (int i = 0; i < listSeq->GetLength(); ++i)
-        std::cout << listSeq->Get(i) << " ";
-    std::cout << "\n";
-
-    delete arrSeq;
-    delete listSeq;
+    return 0;
 }

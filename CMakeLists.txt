@@ -25,3 +25,13 @@ add_executable(immutable_tests
     tests/test_immutable_list.cpp
 )
 target_include_directories(immutable_tests PRIVATE include tests)
+
+# ======== ТЕСТЫ ВСЕГО ==========
+add_executable(big_all_tests
+    tests/catch_amalgamated.cpp
+    tests/test_all.cpp
+)
+
+target_include_directories(big_all_tests PRIVATE include tests)
+
+# ========== UI ==========

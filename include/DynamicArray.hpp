@@ -30,6 +30,20 @@ public:
 
     DynamicArray<T> GetSubArray(int start, int end) const;
     DynamicArray<T> Concat(const DynamicArray<T> &other) const;
+
+    T &operator[](int index)
+    {
+        if (index < 0 || index >= size)
+            throw std::out_of_range("Index out of range");
+        return data[index];
+    }
+
+    const T &operator[](int index) const
+    {
+        if (index < 0 || index >= size)
+            throw std::out_of_range("Index out of range");
+        return data[index];
+    }
 };
 
 template <class T>
