@@ -73,7 +73,7 @@ void TestArrayMutableSequence()
     int count = 0;
     for (auto &val : seq)
     {
-        (void)val; // просто пробежка
+        (void)val; 
         count++;
     }
     assert(count == seq.GetLength());
