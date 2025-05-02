@@ -28,8 +28,8 @@
 ## 📦 Установка
 
 ```bash
-git clone https://github.com/yourusername/SequenceLab.git
-cd SequenceLab
+git clone https://github.com/innoky/Containers-labaratory.git
+cd Containers-labaratory
 mkdir build && cd build
 cmake ..
 make
