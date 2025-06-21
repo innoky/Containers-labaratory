@@ -59,13 +59,6 @@ private:
 public:
     ListMutableSequence() = default;
     ListMutableSequence(const T *items, int count) : data(items, count) {}
-    ListMutableSequence(const std::vector<T> &items) : ListMutableSequence()
-    {
-        for (const auto &item : items)
-        {
-            data.Append(item);
-        }
-    }
 
     T GetFirst() const override
     {
@@ -96,34 +89,36 @@ public:
         if (startIndex < 0 || endIndex >= GetLength() || startIndex > endIndex)
             throw std::out_of_range("Invalid indices for subsequence");
         auto subList = data.GetSubList(startIndex, endIndex);
-        auto array = subList->ToArray();
-        return std::make_unique<ListMutableSequence<T>>(array);
+        auto newSeq = std::make_unique<ListMutableSequence<T>>();
+        newSeq->data = *subList;
+        delete subList;
+        return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> Append(T item) override
     {
-        auto newSeq = std::make_unique<ListMutableSequence<T>>(data.ToArray());
+        auto newSeq = std::make_unique<ListMutableSequence<T>>(*this);
         newSeq->AppendInPlace(item);
         return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> Prepend(T item) override
     {
-        auto newSeq = std::make_unique<ListMutableSequence<T>>(data.ToArray());
+        auto newSeq = std::make_unique<ListMutableSequence<T>>(*this);
         newSeq->PrependInPlace(item);
         return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> InsertAt(T item, int index) override
     {
-        auto newSeq = std::make_unique<ListMutableSequence<T>>(data.ToArray());
+        auto newSeq = std::make_unique<ListMutableSequence<T>>(*this);
         newSeq->InsertAtInPlace(item, index);
         return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> Concat(const ISequence<T> *list) override
     {
-        auto newSeq = std::make_unique<ListMutableSequence<T>>(data.ToArray());
+        auto newSeq = std::make_unique<ListMutableSequence<T>>(*this);
         newSeq->ConcatInPlace(list);
         return newSeq;
     }
@@ -216,18 +211,18 @@ public:
         return result;
     }
 
-    template <typename U>
-    std::unique_ptr<ListMutableSequence<std::pair<T, U>>> Zip(const ISequence<U> *other) const
-    {
-        int minLength = std::min(GetLength(), other->GetLength());
-        auto result = std::make_unique<ListMutableSequence<std::pair<T, U>>>();
-        auto it = begin();
-        for (int i = 0; i < minLength; ++i, ++it)
-        {
-            result->AppendInPlace({*it, other->Get(i)});
-        }
-        return result;
-    }
+    // template <typename U>
+    // std::unique_ptr<ListMutableSequence<std::pair<T, U>>> Zip(const ISequence<U> *other) const
+    // {
+    //     int minLength = std::min(this->GetLength(), other->GetLength());
+    //     auto result = std::make_unique<ListMutableSequence<std::pair<T, U>>>();
+    //     auto it = begin();
+    //     for (int i = 0; i < minLength; ++i, ++it)
+    //     {
+    //         result->AppendInPlace());
+    //     }
+    //     return result;
+    // }
 
   
 };

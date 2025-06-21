@@ -140,10 +140,6 @@ void TestListMutableSequence()
         assert(filtered->Get(i) % 2 == 0);
     }
 
-    // Zip / Unzip
-    auto zipped = seq.Zip(&otherSeq);
-    assert(zipped->GetLength() == std::min(seq.GetLength(), otherSeq.GetLength()));
-   
 
     // Итерация
     int count = 0;
@@ -274,10 +270,7 @@ void TestListImmutableSequence()
         assert(filtered->Get(i) % 2 == 0);
     }
 
-    // Zip
-    auto zipped = seq.Zip(&otherSeq);
-    assert(zipped->GetLength() == std::min(seq.GetLength(), otherSeq.GetLength()));
-
+  
     std::cout << "ListImmutableSequence tests passed!" << std::endl;
 }
 

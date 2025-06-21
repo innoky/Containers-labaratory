@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdexcept>
-#include <vector>
 
 template <typename T>
 class LinkedList
@@ -199,21 +198,6 @@ public:
         }
         return result;
     }
-
-   
-    std::vector<T> ToArray() const
-    {
-        std::vector<T> result;
-        result.reserve(size);
-        Node *current = head;
-        while (current)
-        {
-            result.push_back(current->data);
-            current = current->next;
-        }
-        return result;
-    }
-
 
     T &operator[](int index)
     {

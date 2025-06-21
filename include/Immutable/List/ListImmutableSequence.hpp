@@ -3,7 +3,10 @@
 #include "include/Immutable/ImmutableSequence.hpp"
 #include "include/core/LinkedList.hpp"
 #include <memory>
+#include <iostream>
 #include <stdexcept>
+#include <functional>
+#include <utility>
 
 template <typename T>
 class ListImmutableSequence : public ImmutableSequence<T>
@@ -15,14 +18,6 @@ public:
     ListImmutableSequence() = default;
 
     ListImmutableSequence(const T *items, int count) : data(items, count) {}
-
-    ListImmutableSequence(const std::vector<T> &items)
-    {
-        for (const auto &item : items)
-        {
-            data.Append(item);
-        }
-    }
 
     T GetFirst() const override
     {
@@ -52,55 +47,56 @@ public:
     {
         if (startIndex < 0 || endIndex >= GetLength() || startIndex > endIndex)
             throw std::out_of_range("Invalid indices for subsequence");
-        auto subList = data.GetSubList(startIndex, endIndex);
-        auto array = subList->ToArray();
-        return std::make_unique<ListImmutableSequence<T>>(array);
+        LinkedList<T> *subList = data.GetSubList(startIndex, endIndex);
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>();
+        newSeq->data = *subList;
+        delete subList;
+        return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> Append(T item) override
     {
-        auto arrayCopy = data.ToArray();
-        arrayCopy.push_back(item);
-        return std::make_unique<ListImmutableSequence<T>>(arrayCopy);
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>(*this);
+        newSeq->data.Append(item);
+        return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> Prepend(T item) override
     {
-        auto arrayCopy = data.ToArray();
-        arrayCopy.insert(arrayCopy.begin(), item);
-        return std::make_unique<ListImmutableSequence<T>>(arrayCopy);
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>(*this);
+        newSeq->data.Prepend(item);
+        return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> InsertAt(T item, int index) override
     {
         if (index < 0 || index > GetLength())
             throw std::out_of_range("Invalid index for insert");
-        auto arrayCopy = data.ToArray();
-        arrayCopy.insert(arrayCopy.begin() + index, item);
-        return std::make_unique<ListImmutableSequence<T>>(arrayCopy);
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>(*this);
+        newSeq->data.InsertAt(item, index);
+        return newSeq;
     }
 
     std::unique_ptr<ISequence<T>> Concat(const ISequence<T> *list) override
     {
-        auto arrayCopy = data.ToArray();
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>(*this);
         for (int i = 0; i < list->GetLength(); ++i)
         {
-            arrayCopy.push_back(list->Get(i));
+            newSeq->data.Append(list->Get(i));
         }
-        return std::make_unique<ListImmutableSequence<T>>(arrayCopy);
+        return newSeq;
     }
-   
+
     std::unique_ptr<ListImmutableSequence<T>> Map(std::function<T(const T &)> func) const
     {
-       
-        std::vector<T> mappedItems;
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>();
         for (int i = 0; i < data.GetLength(); ++i)
         {
-            mappedItems.push_back(func(data.Get(i)));
+            newSeq->data.Append(func(data.Get(i)));
         }
-        return std::make_unique<ListImmutableSequence<T>>(mappedItems.data(), mappedItems.size());
+        return newSeq;
     }
-  
+
     T Reduce(std::function<T(const T &, const T &)> func, T initial) const
     {
         T accumulator = initial;
@@ -113,26 +109,27 @@ public:
 
     std::unique_ptr<ListImmutableSequence<T>> Where(std::function<bool(const T &)> predicate) const
     {
-        std::vector<T> filteredItems;
+        auto newSeq = std::make_unique<ListImmutableSequence<T>>();
         for (int i = 0; i < data.GetLength(); ++i)
         {
             if (predicate(data.Get(i)))
             {
-                filteredItems.push_back(data.Get(i));
+                newSeq->data.Append(data.Get(i));
             }
         }
-        return std::make_unique<ListImmutableSequence<T>>(filteredItems.data(), filteredItems.size());
+        return newSeq;
     }
 
     template <typename U>
     std::unique_ptr<ListImmutableSequence<std::pair<T, U>>> Zip(const ISequence<U> *other) const
     {
+        auto newSeq = std::make_unique<ListImmutableSequence<std::pair<T, U>>>();
         int minLength = std::min(this->GetLength(), other->GetLength());
-        std::vector<std::pair<T, U>> zippedItems;
         for (int i = 0; i < minLength; ++i)
         {
-            zippedItems.emplace_back(data.Get(i), other->Get(i));
+            newSeq->Append({this->Get(i), other->Get(i)});
+        
         }
-        return std::make_unique<ListImmutableSequence<std::pair<T, U>>>(zippedItems.data(), zippedItems.size());
+        return newSeq;
     }
 };

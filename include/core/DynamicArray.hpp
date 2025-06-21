@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 #include <algorithm> 
-#include <vector>
 
 template <typename T>
 class DynamicArray
@@ -123,28 +122,5 @@ public:
             throw std::out_of_range("Index out of range");
         }
         return data[index];
-    }
-
-    std::vector<T> ToVector() const
-    {
-        std::vector<T> result(size);
-        for (int i = 0; i < size; ++i)
-        {
-            result[i] = data[i];
-        }
-        return result;
-    }
-
-    std::vector<T> GetSubVector(int startIndex, int endIndex) const
-    {
-        if (startIndex < 0 || endIndex >= size || startIndex > endIndex)
-            throw std::out_of_range("Invalid indices");
-
-        std::vector<T> result(endIndex - startIndex + 1);
-        for (int i = 0; i <= endIndex - startIndex; ++i)
-        {
-            result[i] = data[startIndex + i];
-        }
-        return result;
     }
 };

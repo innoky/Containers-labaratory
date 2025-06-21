@@ -2,7 +2,6 @@
 
 #include "include/Immutable/ImmutableSequence.hpp"
 #include "include/core/DynamicArray.hpp"
-#include <vector>
 #include <memory>
 #include <functional>
 #include <utility>
@@ -17,11 +16,6 @@ private:
 public:
     ArrayImmutableSequence(const T *items, int count)
         : data(items, count)
-    {
-    }
-
-    ArrayImmutableSequence(const std::vector<T> &items)
-        : data(items.data(), items.size())
     {
     }
 
@@ -51,61 +45,113 @@ public:
 
     std::unique_ptr<ISequence<T>> GetSubsequence(int startIndex, int endIndex) const override
     {
-        auto subVec = data.GetSubVector(startIndex, endIndex);
-        return std::make_unique<ArrayImmutableSequence<T>>(subVec);
+        if (startIndex < 0 || endIndex >= GetLength() || startIndex > endIndex)
+            throw std::out_of_range("Invalid indices for subsequence");
+        int newSize = endIndex - startIndex + 1;
+        T *subItems = new T[newSize];
+        for (int i = 0; i < newSize; ++i)
+        {
+            subItems[i] = data.Get(startIndex + i);
+        }
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(subItems, newSize);
+        delete[] subItems;
+        return result;
     }
 
     std::unique_ptr<ISequence<T>> Append(T item) override
     {
-        auto vec = data.ToVector();
-        vec.push_back(item);
-        return std::make_unique<ArrayImmutableSequence<T>>(vec);
+        int oldSize = data.GetSize();
+        int newSize = oldSize + 1;
+        T *newItems = new T[newSize];
+        for (int i = 0; i < oldSize; ++i)
+        {
+            newItems[i] = data.Get(i);
+        }
+        newItems[oldSize] = item;
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(newItems, newSize);
+        delete[] newItems;
+        return result;
     }
 
     std::unique_ptr<ISequence<T>> Prepend(T item) override
     {
-        auto vec = data.ToVector();
-        vec.insert(vec.begin(), item);
-        return std::make_unique<ArrayImmutableSequence<T>>(vec);
+        int oldSize = data.GetSize();
+        int newSize = oldSize + 1;
+        T *newItems = new T[newSize];
+        newItems[0] = item;
+        for (int i = 0; i < oldSize; ++i)
+        {
+            newItems[i + 1] = data.Get(i);
+        }
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(newItems, newSize);
+        delete[] newItems;
+        return result;
     }
 
     std::unique_ptr<ISequence<T>> InsertAt(T item, int index) override
     {
-        auto vec = data.ToVector();
-        if (index < 0 || index > static_cast<int>(vec.size()))
+        if (index < 0 || index > data.GetSize())
             throw std::out_of_range("Index out of bounds");
-        vec.insert(vec.begin() + index, item);
-        return std::make_unique<ArrayImmutableSequence<T>>(vec);
+        int oldSize = data.GetSize();
+        int newSize = oldSize + 1;
+        T *newItems = new T[newSize];
+        for (int i = 0; i < index; ++i)
+        {
+            newItems[i] = data.Get(i);
+        }
+        newItems[index] = item;
+        for (int i = index; i < oldSize; ++i)
+        {
+            newItems[i + 1] = data.Get(i);
+        }
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(newItems, newSize);
+        delete[] newItems;
+        return result;
     }
 
     std::unique_ptr<ISequence<T>> Concat(const ISequence<T> *list) override
     {
-        auto vec = data.ToVector();
-        for (int i = 0; i < list->GetLength(); ++i)
+        int ourSize = data.GetSize();
+        int theirSize = list->GetLength();
+        int newSize = ourSize + theirSize;
+        T *newItems = new T[newSize];
+        for (int i = 0; i < ourSize; ++i)
         {
-            vec.push_back(list->Get(i));
+            newItems[i] = data.Get(i);
         }
-        return std::make_unique<ArrayImmutableSequence<T>>(vec);
+        for (int i = 0; i < theirSize; ++i)
+        {
+            newItems[ourSize + i] = list->Get(i);
+        }
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(newItems, newSize);
+        delete[] newItems;
+        return result;
     }
 
     std::unique_ptr<ArrayImmutableSequence<T>> Map(std::function<T(const T &)> func) const
     {
-        std::vector<T> mapped;
-        for (int i = 0; i < data.GetSize(); ++i)
+        int size = data.GetSize();
+        T *mappedItems = new T[size];
+        for (int i = 0; i < size; ++i)
         {
-            mapped.push_back(func(data.Get(i)));
+            mappedItems[i] = func(data.Get(i));
         }
-        return std::make_unique<ArrayImmutableSequence<T>>(mapped);
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(mappedItems, size);
+        delete[] mappedItems;
+        return result;
     }
 
     std::unique_ptr<ArrayImmutableSequence<T>> MapIndexed(std::function<T(const T &, int)> func) const
     {
-        std::vector<T> mapped;
-        for (int i = 0; i < data.GetSize(); ++i)
+        int size = data.GetSize();
+        T *mappedItems = new T[size];
+        for (int i = 0; i < size; ++i)
         {
-            mapped.push_back(func(data.Get(i), i));
+            mappedItems[i] = func(data.Get(i), i);
         }
-        return std::make_unique<ArrayImmutableSequence<T>>(mapped);
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(mappedItems, size);
+        delete[] mappedItems;
+        return result;
     }
 
     T Reduce(std::function<T(const T &, const T &)> func, T initial) const
@@ -120,24 +166,42 @@ public:
 
     std::unique_ptr<ArrayImmutableSequence<T>> Where(std::function<bool(const T &)> predicate) const
     {
-        std::vector<T> filtered;
+        int newSize = 0;
         for (int i = 0; i < data.GetSize(); ++i)
         {
             if (predicate(data.Get(i)))
-                filtered.push_back(data.Get(i));
+            {
+                newSize++;
+            }
         }
-        return std::make_unique<ArrayImmutableSequence<T>>(filtered);
+
+        T *filteredItems = new T[newSize];
+        int current = 0;
+        for (int i = 0; i < data.GetSize(); ++i)
+        {
+            if (predicate(data.Get(i)))
+            {
+                filteredItems[current++] = data.Get(i);
+            }
+        }
+        auto result = std::make_unique<ArrayImmutableSequence<T>>(filteredItems, newSize);
+        delete[] filteredItems;
+        return result;
     }
 
     template <typename U>
     std::unique_ptr<ArrayImmutableSequence<std::pair<T, U>>> Zip(const ISequence<U> *other) const
     {
         int minLength = std::min(data.GetSize(), other->GetLength());
-        std::vector<std::pair<T, U>> zipped;
+        using ZippedType = std::pair<T, U>;
+        ZippedType *zippedItems = new ZippedType[minLength];
+
         for (int i = 0; i < minLength; ++i)
         {
-            zipped.emplace_back(data.Get(i), other->Get(i));
+            zippedItems[i] = {data.Get(i), other->Get(i)};
         }
-        return std::make_unique<ArrayImmutableSequence<std::pair<T, U>>>(zipped);
+        auto result = std::make_unique<ArrayImmutableSequence<ZippedType>>(zippedItems, minLength);
+        delete[] zippedItems;
+        return result;
     }
 };
